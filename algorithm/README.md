@@ -21,4 +21,4 @@ ciphertext = encrypt(message, n, e)
 print(decrypt(ciphertext, n, d))
 ```
 
-Check out the [docs](https://rsa-kriptografija.netlify.app) for more examples.
+Check out the [docs](https://rsa-docs.netlify.app) for more examples.

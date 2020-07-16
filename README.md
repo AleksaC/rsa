@@ -1,6 +1,9 @@
 # rsa
 
 [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/AleksaC/rsa/blob/master/LICENSE)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/a30a8e01-c7b3-4421-bf05-e6e265ac52f7/deploy-status)](https://app.netlify.com/sites/rsa-docs/deploys)
+[![rsa](https://circleci.com/gh/AleksaC/rsa.svg?style=svg)](https://circleci.com/gh/AleksaC/rsa)
+[![Coverage Status](https://coveralls.io/repos/github/AleksaC/rsa/badge.svg?branch=master&t=v7XyBE)](https://coveralls.io/github/AleksaC/rsa?branch=master)
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/AleksaC/rsa/blob/master/.pre-commit-config.yaml)
 
