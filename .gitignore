@@ -1,0 +1,32 @@
+# Editor
+.vs/
+.vscode/
+.idea/
+
+# Virtual environment
+venv/
+
+# pyenv
+.python-version
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# pip editable install
+*.egg-info
+
+# Tests and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.cover
+docs/_build/
+.hypothesis
+.tox
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

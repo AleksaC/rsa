@@ -1,0 +1,19 @@
+[run]
+branch = true
+
+omit =
+    rsa/__main__.py
+    */tests/*
+    */venv/*
+    */test_*
+
+[report]
+show_missing = true
+
+exclude_lines =
+    pragma: no cover
+    except ImportError
+    raise ImportError
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == "__main__":

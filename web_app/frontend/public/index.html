@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <title>RSA</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <main>
+      <h1>RSA Algorithm</h1>
+      <h2>Key Generation</h2>
+      <form action="/api/keygen" method="get">
+        <label for="num_bits">Number of bits</label>
+        <input type="number" id="num_bits" name="num_bits" required />
+        <input type="submit" value="Generate" />
+        <div class="result"></div>
+      </form>
+      <h2>Encryption</h2>
+      <form action="/api/encrypt" method="get">
+        <label for="message">Message</label>
+        <input type="text" id="message" name="message" required />
+        <label for="key">Key</label>
+        <input type="text" id="key" name="key" required />
+        <input type="submit" value="Encrypt" />
+        <div class="result"></div>
+      </form>
+      <h2>Decryption</h2>
+      <form action="/api/decrypt" method="get">
+        <label for="ciphertext">Ciphertext</label>
+        <input type="text" id="ciphertext" name="ciphertext" required />
+        <label for="decryption-key">Key</label>
+        <input type="text" id="decryption-key" name="key" required />
+        <input type="submit" value="Decrypt" />
+        <div class="result"></div>
+      </form>
+    </main>
+  </body>
+</html>

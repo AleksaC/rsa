@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: dev.Dockerfile
+    image: rsa-backend-dev
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: dev.Dockerfile
+    image: rsa-frontend-dev
+    environment:
+      - API_HOST=http://backend:5000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app

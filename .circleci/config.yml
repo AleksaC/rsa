@@ -1,0 +1,161 @@
+version: 2.1
+
+jobs:
+  test:
+    working_directory: ~/project
+
+    docker:
+      - image: circleci/python:3.8.2
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ .Branch }}-{{ checksum "requirements-test.txt" }}
+      - run:
+          name: install_requirements
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements-test.txt
+      - save_cache:
+          key: deps-{{ .Branch }}-{{ checksum "requirements-test.txt" }}
+          paths:
+            - venv
+      - run:
+          name: run_tests
+          command: |
+            source venv/bin/activate
+            ./runtests.sh
+            coveralls
+      - store_artifacts:
+          path: htmlcov
+
+  pre-commit:
+    working_directory: ~/project
+
+    docker:
+      - image: circleci/python:3.8.2
+
+    environment:
+      BASE_REV: << pipeline.git.base_revision >>
+      CURR_REV: << pipeline.git.revision >>
+
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "d4:44:54:df:7b:c2:45:20:82:04:7f:1d:ed:5b:25:5c"
+      - checkout
+      - restore_cache:
+          keys:
+            - pre-commit-{{ .Branch }}-{{ checksum ".pre-commit-config.yaml" }}
+      - run:
+          name: install_pre-commit
+          command: |
+            virtualenv venv -p python3
+            source venv/bin/activate
+            pip install pre-commit
+      - run:
+          name: pre-commit
+          command: |
+            source venv/bin/activate
+            pre-commit install
+            if [ $BASE_REV = "<nil>" ];
+            then
+              pre-commit run --all-files
+            else
+              pre-commit run --files $(git diff --name-only $BASE_REV $CURR_REV)
+            fi
+      - save_cache:
+          key: pre-commit-{{ .Branch }}-{{ checksum ".pre-commit-config.yaml" }}
+          paths:
+            - ~/.cache/pre-commit
+            - venv
+          when: always
+      - run:
+          name: push_back
+          command: |
+            if ! git diff-index --quiet HEAD --;
+            then
+              git config --global user.name "CircleCI"
+              git add .
+              git commit --no-verify -m "${CIRCLE_JOB} fixes ${CIRCLE_BUILD_URL} [ci skip]"
+              git remote set-url origin $CIRCLE_REPOSITORY_URL > /dev/null 2>&1
+              git push origin HEAD:${CIRCLE_BRANCH}
+            fi
+          when: on_fail
+
+  mypy:
+    working_directory: ~/project
+
+    docker:
+      - image: circleci/python:3.8.2
+
+    steps:
+      - checkout
+      - run:
+          name: install-mypy
+          command: |
+            virtualenv venv -p python3
+            source venv/bin/activate
+            pip install mypy
+      - run:
+          name: mypy
+          command: |
+            source venv/bin/activate
+            mypy algorithm/rsa
+
+  generate-docs:
+    working_directory: ~/project/docs
+
+    docker:
+      - image: circleci/python:3.8.2
+
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "d4:44:54:df:7b:c2:45:20:82:04:7f:1d:ed:5b:25:5c"
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - sphinx-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          name: install requirements
+          command: |
+            virtualenv venv -p python3
+            source venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: generate docs
+          command: |
+            source venv/bin/activate
+            make generate
+            [ $(tail -c 2 ./rsa/rsa.rst | wc -l) = 2 ] \
+              && sed -i '$ d' ./rsa/rsa.rst
+      - run:
+          name: push_back
+          command: |
+            if git status --procelain . | grep -q .;
+            then
+              git config --global user.name "CircleCI"
+              git add .
+              git commit --no-verify -m "Update docs ${CIRCLE_BUILD_URL} [ci skip]"
+              git remote set-url origin $CIRCLE_REPOSITORY_URL > /dev/null 2>&1
+              git push origin HEAD:${CIRCLE_BRANCH}
+            fi
+          when: on_success
+      - save_cache:
+          key: sphinx-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - venv
+          when: always
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - test
+      - pre-commit
+      - mypy
+      - generate-docs
