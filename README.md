@@ -46,7 +46,7 @@ docker-compose up
 Backend API will be exposed through port 5000 and frontend will be available
 at port 3000.
 
-To run a production version use:
+To run the production version use:
 ```shell script
 docker-compose up -f docker-compose.yml
 ```
