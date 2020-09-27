@@ -75,12 +75,13 @@ jobs:
       - run:
           name: push_back
           command: |
-            if ! git diff-index --quiet HEAD --;
+            if git status --porcelain . | grep -q .;
             then
               git config --global user.name "CircleCI"
+              git remote set-url origin $CIRCLE_REPOSITORY_URL &> /dev/null
               git add .
               git commit --no-verify -m "${CIRCLE_JOB} fixes ${CIRCLE_BUILD_URL} [ci skip]"
-              git remote set-url origin $CIRCLE_REPOSITORY_URL > /dev/null 2>&1
+              git pull --rebase
               git push origin HEAD:${CIRCLE_BRANCH}
             fi
           when: on_fail
@@ -131,17 +132,16 @@ jobs:
           command: |
             source venv/bin/activate
             make generate
-            [ $(tail -c 2 ./rsa/rsa.rst | wc -l) = 2 ] \
-              && sed -i '$ d' ./rsa/rsa.rst
       - run:
           name: push_back
           command: |
-            if git status --procelain . | grep -q .;
+            if git status --porcelain . | grep -q .;
             then
               git config --global user.name "CircleCI"
+              git remote set-url origin $CIRCLE_REPOSITORY_URL &> /dev/null
               git add .
               git commit --no-verify -m "Update docs ${CIRCLE_BUILD_URL} [ci skip]"
-              git remote set-url origin $CIRCLE_REPOSITORY_URL > /dev/null 2>&1
+              git pull --rebase
               git push origin HEAD:${CIRCLE_BRANCH}
             fi
           when: on_success
